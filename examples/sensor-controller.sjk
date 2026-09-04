@@ -1,0 +1,16 @@
+; Normalized KLambda-style embedded sensor decision controller.
+; The host binds primitive 1 to an ADC sample and primitive 2 to an output.
+(program
+  (import adc-read 1 0 1 effectful)
+  (import gpio-write 2 1 1 effectful)
+
+  (function classify (Sample)
+    (if (< Sample 300)
+        0
+        (if (< Sample 700) 1 2)))
+
+  (function main ()
+    (let Sample (device adc-read)
+      (device gpio-write (classify Sample))))
+
+  (entry main))

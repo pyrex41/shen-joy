@@ -52,5 +52,47 @@ of the device image.
 - static quotations introduced by the compiler;
 - no runtime `eval`, symbol rebinding, reader, or interactive definitions.
 
-Lists, vectors, restricted closures, traps, and device primitives will be
-added as separately selectable target capabilities.
+Bounded lists/vectors and device primitives are selectable capabilities.
+Restricted closures and traps remain explicit future capabilities.
+
+## Normalized input accepted by the compiler
+
+The M2 frontend deliberately accepts normalized KLambda-style s-expressions,
+not arbitrary Shen source. A file has one `program` form containing imports,
+functions, and zero-arity entries:
+
+```lisp
+(program
+  (import adc-read 1 0 1 effectful)
+  (function square+1 (X) (+ (* X X) 1))
+  (function main () (square+1 6))
+  (entry main))
+```
+
+Expressions are signed 30-bit integers, `true`, `false`, `nil`, variables,
+`if`, `do`, `let`, `+`, `-`, `*`, `=`, `<`, static first-order calls,
+`cons`, `head`, `tail`, `nil?`, fixed-length `vector`, `vector-get`,
+`vector-set`, and `(device NAME ARG...)`. Imports declare numeric identity,
+input/output count, and `deterministic` or `effectful` classification.
+The normalized input is the output of an upstream Shen typechecking/lowering
+step; this compiler does not contain the Shen typechecker. Equality is scalar
+(fixnums, booleans, and static quotations); structural list/vector equality is
+unsupported and returns an explicit status if invalid normalized input uses it.
+
+Every recursive call must be in tail position. For a finite conservative
+return-stack proof, non-tail calls may only target an earlier function in the
+file; helpers therefore precede callers. Functions have at most 16 parameters,
+programs 128 functions, normalized trees 4096 nodes, and generated images
+16384 instructions. These are host compiler limits with named diagnostics,
+not device-side parser behavior.
+
+For version 1's invocation arena, allocation sites must remain in an entry
+function and cannot be reached through a call or recursion. This intentionally
+conservative rule makes the summed arena ceiling sound. Programs needing
+repeated allocation require a later region/copying profile and are rejected.
+
+Repeated operands such as `(* X X)` are statically scheduled as a `dup-mul`
+superinstruction. `let` values and distant uses use indexed frame locals.
+The compiler rejects unknown names, wrong arities, forward/non-tail recursive
+calls, runtime evaluation, closures, strings, symbols, traps, arbitrary
+quotations, and dynamic globals before image emission.

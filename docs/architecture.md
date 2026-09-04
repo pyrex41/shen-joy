@@ -24,11 +24,21 @@ and immutable code image.  All storage is supplied by its caller.  Opcodes
 return explicit status values for bad images, resource exhaustion, type
 errors, and unsupported facilities.
 
-The first implementation deliberately has no heap.  Bounded cons/vector
-storage and a selectable collection policy are the next semantic layer.  A
-no-collection arena profile is appropriate when image analysis can prove an
-allocation ceiling; a compact copying collector is appropriate for longer
-running devices.
+Version 1 has no-heap and bounded invocation-arena profiles. Cons cells occupy
+three words (kind, head, tail); vectors occupy one header word plus their fixed
+element count. References are tagged word indices, never host pointers. The
+compiler conservatively sums statically visible allocation sites, and the VM
+returns `Heap_Limit` or `Heap_Bounds` instead of allocating or panicking.
+
+Device calls use a numeric import ID and a callback receiving the machine and
+opaque caller context. The image records each import's stack effect and
+determinism class; target validation checks capabilities, capacities, and IDs
+before execution.
+
+The callback ABI is `Status callback(u32 primitive_id, ^Machine, rawptr ctx)`.
+Inputs are already on the data stack and a successful callback must consume
+and produce exactly the declared counts. It must validate any address/length,
+must not unwind through the VM, and reports failure with a stable status.
 
 ## Hardware mapping
 
@@ -42,3 +52,7 @@ running devices.
 Odin is the reference implementation and a practical native runtime.  FPGA
 targets will implement the documented machine in RTL rather than synthesize
 Odin source.
+
+The repository also carries a freestanding C99 runtime cross-compiled for the
+RP2040 Cortex-M0+ and a synthesizable SystemVerilog no-heap subset. See
+`deployment.md` for exact evidence and explicit hardware limitations.

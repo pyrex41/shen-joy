@@ -3,13 +3,13 @@
 all: test
 
 build:
-	./scripts/build.sh
+	nix develop path:. --command ./scripts/build.sh
 
 test:
-	odin test src
+	nix flake check path:.
 
-run: build
-	./build/shen-joy --demo
+run:
+	nix run path:. -- --demo
 
 clean:
 	rm -rf build

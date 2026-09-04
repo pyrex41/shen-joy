@@ -43,3 +43,30 @@ The demo evaluates Joy-style `6 dup * 1 +` and prints `37`.
 See [docs/shen-to-joy.md](docs/shen-to-joy.md) for why the compiler uses a
 hybrid stack/local representation instead of mechanically translating all
 lambda terms through S/K combinators.
+
+The packaged CLI supports:
+
+```sh
+nix run . -- compile --profile core tests/differential.sjk --output program.sji
+nix run . -- inspect program.sji
+nix run . -- validate program.sji
+nix run . -- run program.sji --fuel 100000
+nix run . -- bench program.sji --iterations 500 --warmup 20
+```
+
+Profiles are `core` (no heap/imports), `arena` (bounded lists/vectors), and
+`embedded` (arena plus declared device imports). The target never contains a
+Shen reader, mutable dictionary, JIT, or host filesystem dependency.
+
+For the reproducible comparison with shen-go, Bifrost composes both pinned port
+toolchains and runs their steady-state VM benchmarks:
+
+```sh
+cd ../bifrost
+nix run .#env -- shen-go shen-joy -- go run . bench shen-joy-vs-shen-go
+```
+
+The latest local measurement and exact method are recorded in
+[docs/benchmark.md](docs/benchmark.md). Yggdrasil also exposes a bounded `joy`
+target; unsupported KLambda is an explicit capability skip, not silently
+interpreted on the device.

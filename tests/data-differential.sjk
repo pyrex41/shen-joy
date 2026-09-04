@@ -1,0 +1,7 @@
+(program
+  (function main ()
+    (+ (head (tail (cons 1 (cons 9 nil))))
+       (let V (vector 4)
+         (let W (vector-set V 2 42)
+           (vector-get W 2)))))
+  (entry main))

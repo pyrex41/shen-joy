@@ -36,7 +36,21 @@
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "odin-src": "odin-src"
+        "odin-src": "odin-src",
+        "shen-cl-src": "shen-cl-src"
+      }
+    },
+    "shen-cl-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1575759567,
+        "narHash": "sha256-YBQo/5PTXt4NI9PoWZKrjV21MRIr7a+eQ3gQXAB+MPs=",
+        "type": "tarball",
+        "url": "https://github.com/Shen-Language/shen-cl/releases/download/v3.0.3/shen-cl-v3.0.3-sources.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/Shen-Language/shen-cl/releases/download/v3.0.3/shen-cl-v3.0.3-sources.tar.gz"
       }
     }
   },
