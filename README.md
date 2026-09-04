@@ -4,6 +4,9 @@
 of Shen into a small concatenative machine suitable for microcontrollers and
 eventually FPGAs.
 
+The complete product scope, requirements, milestones, and release gates are in
+the [Product Requirements Document](PRD.md).
+
 It is not another complete Shen runtime and it is not an ANS Forth.  Parsing,
 typechecking, lambda lifting, closure analysis, and image construction happen
 on a development machine.  A target receives a validated static image and a
