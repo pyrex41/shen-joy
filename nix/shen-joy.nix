@@ -7,7 +7,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ odin ];
   buildPhase = ''
     odin test src
-    ./scripts/build.sh
+    bash ./scripts/build.sh
   '';
   installPhase = ''mkdir -p $out/bin; cp build/shen-joy $out/bin/shen-joy'';
 }
