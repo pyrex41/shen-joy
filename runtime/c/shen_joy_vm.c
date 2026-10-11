@@ -16,10 +16,12 @@ static int push(sj_machine *m, uint32_t v) {
   m->data[m->sp++] = v; return 1;
 }
 static int pop(sj_machine *m, uint32_t *v) {
-  if (!m->sp) return 0; *v = m->data[--m->sp]; return 1;
+  if (!m->sp) return 0;
+  *v = m->data[--m->sp]; return 1;
 }
 static int fixnum(uint32_t v, int32_t *n) {
-  if (TAG(v) != 1u) return 0; *n = ((int32_t)v) >> 2; return 1;
+  if (TAG(v) != 1u) return 0;
+  *n = ((int32_t)v) >> 2; return 1;
 }
 static int make_fixnum(int64_t n, uint32_t *v) {
   if (n < -(INT64_C(1)<<29) || n > (INT64_C(1)<<29)-1) return 0;
@@ -55,7 +57,8 @@ sj_result sj_vm_run(sj_machine *m, size_t entry) {
       if(!fixnum(av,&a32)||!fixnum(bv,&b32))return done(m,SJ_TYPE_ERROR);
       if(OP(ins)==9)v=a32<b32?TRUE_VALUE:FALSE_VALUE;
       else if(!make_fixnum(OP(ins)==5?(int64_t)a32+b32:OP(ins)==6?(int64_t)a32-b32:(int64_t)a32*b32,&v))return done(m,SJ_ARITHMETIC_OVERFLOW);
-      if(!push(m,v))return done(m,SJ_STACK_LIMIT);break;
+      if(!push(m,v))return done(m,SJ_STACK_LIMIT);
+      break;
     case 8: if(!pop(m,&bv)||!pop(m,&av))return done(m,SJ_BAD_IMAGE);if(TAG(av)==0||TAG(bv)==0)return done(m,SJ_UNSUPPORTED);if(!push(m,av==bv?TRUE_VALUE:FALSE_VALUE))return done(m,SJ_STACK_LIMIT);break;
     case 10: next=(size_t)((int64_t)next+signed_arg(ins));break;
     case 11: if(!pop(m,&v))return done(m,SJ_BAD_IMAGE);if(v==FALSE_VALUE)next=(size_t)((int64_t)next+signed_arg(ins));else if(v!=TRUE_VALUE)return done(m,SJ_TYPE_ERROR);break;
