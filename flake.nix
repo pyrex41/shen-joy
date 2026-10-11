@@ -6,12 +6,8 @@
       url = "github:odin-lang/Odin/a2fb372b76e81ef31fbbc8a2cf2b4fdf5ac6c924";
       flake = false;
     };
-    shen-cl-src = {
-      url = "https://github.com/Shen-Language/shen-cl/releases/download/v3.0.3/shen-cl-v3.0.3-sources.tar.gz";
-      flake = false;
-    };
   };
-  outputs = { self, nixpkgs, odin-src, shen-cl-src }:
+  outputs = { self, nixpkgs, odin-src }:
     let
       systems = [ "aarch64-darwin" "x86_64-linux" ];
       forAll = nixpkgs.lib.genAttrs systems;
@@ -24,7 +20,9 @@
             llvmPackages_22 = pkgs.llvmPackages_22;
           };
           shen-joy = pkgs.callPackage ./nix/shen-joy.nix { inherit odin; };
-          shen-reference = pkgs.callPackage ./nix/shen-reference.nix { src = shen-cl-src; };
+          # Differential reference: upstream shen-scheme v0.50 on ShenOSKernel 42.2
+          # (see PROVENANCE.md). Archives are pinned by SHA-256 in the derivation.
+          shen-reference = pkgs.callPackage ./nix/shen-reference.nix { };
           mcu-runtime = pkgs.runCommand "shen-joy-rp2040-runtime" { nativeBuildInputs = [ pkgs.llvmPackages_22.clang-unwrapped ]; } ''
             mkdir -p $out/lib $out/include
             clang --target=armv6m-none-eabi -std=c99 -Oz -ffreestanding -fno-builtin -nostdlib -I${./runtime/c} \
@@ -62,12 +60,12 @@
             cp ${./tests/differential.sjk} program.sjk
             shen-joy compile --profile core program.sjk --output program.sji >/dev/null
             actual="$(shen-joy run program.sji)"
-            expected="$(shen-reference eval -l ${./tests/differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
+            expected="$(shen-reference script ${./tests/differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
             test "$actual" = "$expected"
             cp ${./tests/data-differential.sjk} data.sjk
             shen-joy compile --profile arena data.sjk --output data.sji >/dev/null
             actual="$(shen-joy run data.sji)"
-            expected="$(shen-reference eval -l ${./tests/data-differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
+            expected="$(shen-reference script ${./tests/data-differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
             test "$actual" = "$expected"
             touch $out
           '';
