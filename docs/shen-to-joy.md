@@ -55,11 +55,11 @@ of the device image.
 Bounded lists/vectors and device primitives are selectable capabilities.
 Restricted closures and traps remain explicit future capabilities.
 
-## Kernel baseline: ShenOSKernel 42.2
+## Kernel baseline: ShenOSKernel 43.1
 
-The subset is defined relative to the community ShenOSKernel 42.2
-(`Shen-Language/shen-sources` tag `shen-42.2`). That is the kernel shipped by
-shen-scheme 0.50, which is also the differential reference; see
+The subset is defined relative to the community ShenOSKernel 43.1
+(`Shen-Language/shen-sources` tag `shen-43.1`). That is the kernel shipped by
+Shen/CL 3.2.0, which is also the differential reference; see
 [PROVENANCE.md](../PROVENANCE.md). The Tarver S42.0 lineage is not used.
 shen-joy runs no kernel code. A kernel change matters here only if it changes
 the KLambda that a host lowerer receives for subset programs, or the meaning
@@ -68,30 +68,39 @@ of the operations the subset keeps.
 | Kernel change | Status in shen-joy | Reason |
 |---|---|---|
 | 42.0 `update-lambda-table` invalidates a stale `lambda-form` on redefinition with zero or unknown arity | Excluded (not applicable) | The device has no function table, `fn`, partial application or dynamic application. The host compiler rejects a second definition of a name (`duplicate function`), so redefinition cannot occur. |
-| 42.0 factoriser groups more repeated selectors | Excluded | `*factorise?*` is off by default in 42.2. Unfactorised definitions in the subset compile to the same `cond`/`if` KLambda as on 41.2. With `(factorise +)`, the kernel emits `(let GoToN (freeze E) ... (thaw GoToN))` continuations. `freeze`/`thaw` are closures, so a lowerer must reject them. Lowering that specific shape to a join point is possible future host-side work; the device needs no change. |
+| 42.0 factoriser groups more repeated selectors | Excluded | `*factorise?*` is off by default in 43.1. Unfactorised definitions in the subset compile to the same `cond`/`if` KLambda as on 41.2. With `(factorise +)`, the kernel emits `(let GoToN (freeze E) ... (thaw GoToN))` continuations. `freeze`/`thaw` are closures, so a lowerer must reject them. Lowering that specific shape to a join point is possible future host-side work; the device needs no change. |
 | 41.3 `input+` became a macro | Excluded | Streams and input are outside the subset. |
 | 42.1 source-form handlers, `shen.macroexpand-h` 4th argument, `shen.try-parse` returning parsed forms | Excluded | They run in the Shen reader and macro expander on the host, before KLambda exists. shen-joy contains no Shen reader. The device never reads source (see AGENTS.md). |
 | 42.1 `read`/`lineread` EOF fix | Excluded from the device; the host analogue holds | The device has no reader. shen-joy's own `.sjk` reader accepts a final form that has no trailing newline (verified when this baseline was adopted). |
 | 42.1 `namespaces` and `type-annotations` extensions; 42.2 `externals`/`with-externals` evaluation | Excluded | Symbols, packages and evaluated symbol lists are not values in the subset. The normalized form has no package syntax. |
+| 43.1 public stream metadata (`char-stream?`, `read-unit-string`, `write-string`) | Host integration only | These names are part of the port-facing kernel contract and are recorded in the provenance. shen-joy has no stream device, reader, or writer; normalized input and the bounded VM therefore reject stream operations outside the declared host boundary. |
 | 41.1 precompiled `stlib.kl` | Excluded | No standard library runs on the device. A call to an StLib function is an unknown name and is rejected. |
 
 **Subset semantics are unchanged.** None of the changes above affect
 first-order fixnum/boolean code, `let`, `if`/`cond`, `do`, tail calls, or the
 list and absvector primitives that the `arena` profile models. With default
-settings, the KLambda that 42.2 emits for the subset fixtures
+settings, the KLambda that 43.1 emits for the subset fixtures
 (`tests/differential.shen`, and Yggdrasil's `tests/joy-sum.shen` and
 `tests/fib.shen`) has the same shape as the S42.0 output checked in at
 Yggdrasil's `tests/fib.kl`. Only the gensym numbers differ. The differential
-programs give the same results as on the 41.2 reference (`92` and `51`). The existing differences from full Shen still apply:
+programs give the same results as on the 43.1 reference (`92` and `51`). The existing differences from full Shen still apply:
 signed 30-bit fixnums instead of Shen numbers, scalar-only `=`, and a bounded
 arena. They are not kernel-version dependent.
 
-A real 42.2 shake through Yggdrasil is not yet available, because Yggdrasil
-still vendors S42.0 (pyrex41/yggdrasil#32). When it moves to 42.2, its `joy`
+The supported boundary is therefore a small, first-order slice of the full
+43.1 kernel: arithmetic and comparisons, conditionals and sequencing, known
+arity direct and tail calls, static quotations, and the bounded list/vector
+profile. The full kernel's reader, dictionaries, symbols/packages, dynamic
+evaluation, streams, foreign calls, concurrency, Prolog, type-system
+extensions, and unrestricted closures remain outside the device image and are
+host-side or explicit capability rejects.
+
+A real 43.1 shake through Yggdrasil is not yet available in this repository;
+Yggdrasil's 43.1 port owns that integration. When its `joy`
 lowerer must keep rejecting factorised `freeze`/`thaw` continuations. The
 pattern compiler also emits `and` tests for multi-column patterns, for example
 `(and (cons? V) (= 1 W))`. The lowerer must lower these or reject them with
-capability status 3. This is not new in 42.2.
+capability status 3. This is not new in 43.1.
 
 ## Normalized input accepted by the compiler
 

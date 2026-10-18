@@ -7,7 +7,7 @@ documented in [docs/shen-to-joy.md](docs/shen-to-joy.md). The kernel matters
 in two places:
 
 1. **Semantic baseline.** The subset is defined relative to
-   ShenOSKernel 42.2. It covers the semantics of the KLambda that kernel
+   ShenOSKernel 43.1. It covers the semantics of the KLambda that kernel
    emits for first-order programs, restricted as documented in
    `docs/shen-to-joy.md`.
 2. **Differential reference.** `nix flake check` compares shen-joy's results
@@ -18,49 +18,47 @@ in two places:
 
 Tracking issue: pyrex41/shen-joy#1 (umbrella pyrex41/bifrost#26,
 pyrex41/yggdrasil#32). shen-joy follows the decision made for every port:
-**option (a), adopt the community ShenOSKernel 42.2 wholesale.** The Tarver
+**option (a), adopt the community ShenOSKernel 43.1 wholesale.** The Tarver
 S42.0 lineage (`S42.zip`) is not used.
 
 | Field | Value |
 |---|---|
 | Kernel repository | `Shen-Language/shen-sources` |
-| Tag | `shen-42.2` |
-| Commit | `73507e069fe147aefb728d632c4ce40bc6a7b314` |
-| Release asset | `ShenOSKernel-42.2.tar.gz` |
-| Asset SHA-256 | `1d02273003654d34ec020ae67cb214ecec410dee3350419ff807d82b652678d8` |
-| `(version)` | `"42.2"` |
+| Tag | `shen-43.1` |
+| Commit | `715824a52b55e9c81a9501df8548ff3edd8411f5` |
+| Release asset | `ShenOSKernel-43.1.tar.gz` |
+| Asset SHA-256 | `900eedef44f440af78f9395ed06e689ce1604546fc309f5bc7c8bc84cc651920` |
+| `(version)` | `"43.1"` |
 
 ## Differential reference
 
 Before this change, `nix/shen-reference.nix` built Shen/CL 3.0.3 on kernel
-41.2 (`shen-cl-v3.0.3-sources.tar.gz`). It now builds **upstream shen-scheme
-v0.50**, the release that ships ShenOSKernel 42.2:
+42.2. It now builds **Shen/CL v3.2.0**, the release that ships ShenOSKernel
+43.1:
 
 | Archive | Source | SHA-256 |
 |---|---|---|
-| `shen-scheme-v0.50-src.tar.gz` | `tizoc/shen-scheme` tag `v0.50` (commit `1bc774359eefe282823570545afe48ee50b0d544`), release asset | `2959ee95b4bd83e02a88f1220cc4857f66c5587a5928abc9f7e0d17136471986` |
-| `csv10.3.0.tar.gz` | `cisco/ChezScheme` release v10.3.0 (the version and checksum pinned in shen-scheme 0.50's Makefile) | `d237d9874c6e8b0ccf7758daa8286a6e825528b13ce3b2bca56eb1f73cddbc2c` |
-| `ShenOSKernel-42.2.tar.gz` | kernel release above; fetched only to cross-check `(version)` | `1d02273003654d34ec020ae67cb214ecec410dee3350419ff807d82b652678d8` |
+| `shen-cl-v3.2.0-sources.tar.gz` | `Shen-Language/shen-cl` release `v3.2.0` (commit `4844072dde0208c3e4b99dcbfea58e4fdfd812a6`), release asset | `444f562a7779ba7038b9dc39fe88108d6d75cc2e111036a8f27d3dc253b3d43e` |
+| `ShenOSKernel-43.1.tar.gz` | kernel release above; fetched only to cross-check `(version)` | `900eedef44f440af78f9395ed06e689ce1604546fc309f5bc7c8bc84cc651920` |
 
-The shen-scheme source release already contains the 42.2 kernel compiled to
-Scheme (`compiled/*.scm`), so building it needs no bootstrap Shen. The
-derivation pre-extracts the Chez archive so that the upstream Makefile does not
-download anything inside the Nix sandbox. Its install check requires
-`(version)` to equal the kernel release's `VERSION` file (`42.2`).
+The Shen/CL source release already contains the 43.1 kernel compiled to Lisp
+(`compiled/*.lsp`), so building it needs no bootstrap Shen. The derivation
+fetches and verifies the unmodified kernel archive. Its install check requires
+`(version)` to equal the kernel release's `VERSION` file (`43.1`).
 
-shen-scheme was chosen over the 42.2 branch of pyrex41/shen-cl because shen-cl
-has no source release with a precompiled kernel. Building it requires an
-existing Shen (`make precompile SHEN=...`), so a sandboxed Nix build would need
-a bootstrap step. shen-scheme 0.50 also defines the "Shen 0.50 parity" target.
+Shen/CL was chosen because its v3.2.0 source release is the maintained port
+baseline and includes precompiled kernel/compiler Lisp. Its public stream
+primitive names are also the port-facing contract recorded in
+`docs/shen-to-joy.md`.
 
-The reference binary is installed as both `shen-scheme` and `shen-reference`.
-The flake check runs `shen-reference script tests/<name>.shen` and compares
+The reference binary is installed as `shen-reference`. The flake check runs
+`shen-reference eval -l tests/<name>.shen` and compares
 the first `SJ_RESULT=` line with `shen-joy run`.
 
 ## Scope of kernel changes since 41.2
 
-See [docs/shen-to-joy.md](docs/shen-to-joy.md#kernel-baseline-shenoskernel-422)
+See [docs/shen-to-joy.md](docs/shen-to-joy.md#kernel-baseline-shenoskernel-431)
 for which kernel changes are in scope and which are deliberately excluded.
-In short, no change in 41.3 through 42.2 alters the semantics of the bounded
+In short, no change in 41.3 through 43.1 alters the semantics of the bounded
 subset. shen-joy's differential results (`92` and `51`) did not change, and
-they match the 42.2 reference.
+they match the 43.1 reference.

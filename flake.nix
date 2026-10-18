@@ -20,7 +20,7 @@
             llvmPackages_22 = pkgs.llvmPackages_22;
           };
           shen-joy = pkgs.callPackage ./nix/shen-joy.nix { inherit odin; };
-          # Differential reference: upstream shen-scheme v0.50 on ShenOSKernel 42.2
+          # Differential reference: Shen/CL v3.2.0 on ShenOSKernel 43.1
           # (see PROVENANCE.md). Archives are pinned by SHA-256 in the derivation.
           shen-reference = pkgs.callPackage ./nix/shen-reference.nix { };
           mcu-runtime = pkgs.runCommand "shen-joy-rp2040-runtime" { nativeBuildInputs = [ pkgs.llvmPackages_22.clang-unwrapped ]; } ''
@@ -60,12 +60,12 @@
             cp ${./tests/differential.sjk} program.sjk
             shen-joy compile --profile core program.sjk --output program.sji >/dev/null
             actual="$(shen-joy run program.sji)"
-            expected="$(shen-reference script ${./tests/differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
+            expected="$(shen-reference eval -l ${./tests/differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
             test "$actual" = "$expected"
             cp ${./tests/data-differential.sjk} data.sjk
             shen-joy compile --profile arena data.sjk --output data.sji >/dev/null
             actual="$(shen-joy run data.sji)"
-            expected="$(shen-reference script ${./tests/data-differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
+            expected="$(shen-reference eval -l ${./tests/data-differential.shen} | sed -n 's/^SJ_RESULT=//p' | head -n1)"
             test "$actual" = "$expected"
             touch $out
           '';
