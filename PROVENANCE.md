@@ -32,7 +32,7 @@ S42.0 lineage (`S42.zip`) is not used.
 
 ## Differential reference
 
-Before this change, `nix/shen-reference.nix` built Shen/CL 3.0.3 on kernel
+Before this change, `nix/shen-reference.nix` built shen-scheme 0.50 on kernel
 42.2. It now builds **Shen/CL v3.2.0**, the release that ships ShenOSKernel
 43.1:
 
