@@ -40,11 +40,11 @@ nix run . -- --demo
 
 The demo evaluates Joy-style `6 dup * 1 +` and prints `37`.
 
-The subset is defined against the community ShenOSKernel 43.1, the kernel
-shipped by Shen/CL 3.2.0. `nix flake check` differentially tests against a
-pinned Shen/CL 3.2.0 build (`.#shen-reference`). See
+The subset is defined against the community ShenOSKernel 43.2, the kernel
+shipped by Shen/CL 3.2.1 (`pyrex41/shen-cl`). `nix flake check` differentially
+tests against a pinned Shen/CL 3.2.1 build (`.#shen-reference`). See
 [PROVENANCE.md](PROVENANCE.md) for the lineage and hashes, and
-[docs/shen-to-joy.md](docs/shen-to-joy.md#kernel-baseline-shenoskernel-431)
+[docs/shen-to-joy.md](docs/shen-to-joy.md#kernel-baseline-shenoskernel-432)
 for which kernel changes are in scope.
 
 See [docs/shen-to-joy.md](docs/shen-to-joy.md) for why the compiler uses a
