@@ -1,20 +1,20 @@
-# Differential reference: Shen/CL v3.2.1 (pyrex41/shen-cl fork release) with
-# the community ShenOSKernel 43.2 (Shen-Language/shen-sources tag shen-43.2). The source release carries
+# Differential reference: Shen/CL v3.3.0 (pyrex41/shen-cl fork release) with
+# the community ShenOSKernel 43.4 (Shen-Language/shen-sources tag shen-43.4). The source release carries
 # precompiled kernel/compiler Lisp and is built with SBCL; the kernel archive
 # is fetched separately so its bytes and VERSION remain release-gated.
 { stdenv, fetchurl, sbcl, gnumake, gnutar, gzip }:
 let
-  shenVersion = "3.2.1";
-  kernelVersion = "43.2";
+  shenVersion = "3.3.0";
+  kernelVersion = "43.4";
   src = fetchurl {
-    # pyrex41/shen-cl tag v3.2.1, commit 120f387d7ac879a57f87ce65ad0c094c85a3f385.
+    # pyrex41/shen-cl tag v3.3.0, commit b4759cd82dd13e7f3ffaee402cee4c325c957dcd.
     url = "https://github.com/pyrex41/shen-cl/releases/download/v${shenVersion}/shen-cl-v${shenVersion}-sources.tar.gz";
-    sha256 = "bf20620140b0c88e1e9763bd5a321e1844d18980b9d0c0ded5a080267b525470";
+    sha256 = "4c901d693ec3cbf6b94f09372c34e0ede3075e56345001a8904c54a199011cf0";
   };
   kernel = fetchurl {
-    # Shen-Language/shen-sources tag shen-43.2, commit e6947f507ebc03f7ade5d2a8d971bd05d84a5bae.
+    # Shen-Language/shen-sources tag shen-43.4, commit f34b307b490880eedcfe1f5e5d3cc24ca3d2602e.
     url = "https://github.com/Shen-Language/shen-sources/releases/download/shen-${kernelVersion}/ShenOSKernel-${kernelVersion}.tar.gz";
-    sha256 = "23c71508f0de24785e1f127ea4fab440081904d81c463090bc642ee840417f32";
+    sha256 = "15e7972e6bf0cd65d37c2eba85750b8839d2dbadda41027eae0c88e5017a2756";
   };
 in
 stdenv.mkDerivation {

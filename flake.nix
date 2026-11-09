@@ -20,7 +20,7 @@
             llvmPackages_22 = pkgs.llvmPackages_22;
           };
           shen-joy = pkgs.callPackage ./nix/shen-joy.nix { inherit odin; };
-          # Differential reference: Shen/CL v3.2.1 (pyrex41/shen-cl) on ShenOSKernel 43.2
+          # Differential reference: Shen/CL v3.3.0 (pyrex41/shen-cl) on ShenOSKernel 43.4
           # (see PROVENANCE.md). Archives are pinned by SHA-256 in the derivation.
           shen-reference = pkgs.callPackage ./nix/shen-reference.nix { };
           mcu-runtime = pkgs.runCommand "shen-joy-rp2040-runtime" { nativeBuildInputs = [ pkgs.llvmPackages_22.clang-unwrapped ]; } ''
