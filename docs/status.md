@@ -7,7 +7,7 @@ hardware evidence. `nix flake check` is the release-gate command.
 |---|---|---|
 | M0 | Allocation-free Odin VM, explicit statuses, unit demo | None |
 | M1 | v1 sections/checksum/metadata, deterministic encoder, allocation-free validator, corrupt and truncation tests, CLI inspect/validate/run | None |
-| M2 | Documented normalized input, hybrid locals/stack lowering, calls and proper tail recursion, resource report, differential flake check against Shen/CL 3.2.1 on ShenOSKernel 43.2 (see PROVENANCE.md) | Broader generated-program corpus is future coverage, not an advertised feature |
+| M2 | Documented normalized input, hybrid locals/stack lowering, calls and proper tail recursion, resource report, differential flake check against Shen/CL 3.3.0 on ShenOSKernel 43.4 (see PROVENANCE.md) | Broader generated-program corpus is future coverage, not an advertised feature |
 | M3 | Arena lists/vectors, static imports, mock ADC/GPIO controller, deterministic capacity failures | Copying and region heaps are unsupported profiles |
 | M4 | Freestanding C99 runtime and reproducible `armv6m-none-eabi` RP2040 object | Physical boot, GPIO/ADC, board trace, RAM/flash/timing measurements |
 | M5 | Synthesizable SystemVerilog arithmetic/boolean/branch subset and common Odin/C/RTL simulation vector | Board run and post-route device utilization/frequency |
@@ -21,14 +21,14 @@ repository.
 ## Kernel baseline
 
 The subset and the differential reference follow the community
-ShenOSKernel 43.2 (`Shen-Language/shen-sources` tag `shen-43.2`, commit
-`e6947f50`), adopted wholesale. The reference is Shen/CL 3.2.1
-(`pyrex41/shen-cl`); the previous one was Shen/CL 3.2.0 on 43.1.
+ShenOSKernel 43.4 (`Shen-Language/shen-sources` tag `shen-43.4`, commit
+`f34b307b`), adopted wholesale. The reference is Shen/CL 3.3.0
+(`pyrex41/shen-cl`); the previous one was Shen/CL 3.2.1 on 43.2.
 [PROVENANCE.md](../PROVENANCE.md) records the pinned hashes.
-[shen-to-joy.md](shen-to-joy.md#kernel-baseline-shenoskernel-432) records the
+[shen-to-joy.md](shen-to-joy.md#kernel-baseline-shenoskernel-434) records the
 kernel changes in or out of scope; none changes bounded device semantics.
 
-Yggdrasil owns the 43.2 `joy` integration and its stage-1 host. `tests/joy-sum.shen`
+Yggdrasil owns the 43.4 `joy` integration and its stage-1 host. `tests/joy-sum.shen`
 builds and runs (`32004000`) in that port. `tests/fib.shen` is a capability SKIP
 (exit 3) by design: its
 `(output "fib 20 = ~A~%" ...)` is outside the single-`~A` output form, and
